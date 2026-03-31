@@ -4,9 +4,17 @@ Add a paywall to any API in 5 minutes — powered by [Mainlayer](https://mainlay
 
 Mainlayer is the simplest way to monetize any API endpoint. Add one middleware function and your API starts collecting payments automatically. Supports per-call pricing, subscriptions, and credit packs.
 
+**This template includes:**
+- Drop-in payment middleware for Express and FastAPI
+- Per-call, subscription, and credit-based billing models
+- Local development mode (skip payment checks)
+- Comprehensive error handling and logging
+- Full test coverage
+- Production-ready code
+
 ---
 
-## Quickstart
+## 5-Minute Quickstart
 
 ### Step 1 — Get your Mainlayer API key
 
@@ -165,27 +173,49 @@ Configure pricing when you run `./scripts/setup.sh` or `npm run setup`.
 
 ## Running locally
 
-**Python**
+### Python (FastAPI)
 
 ```bash
 cd python
-cp .env.example .env   # fill in your values
+cp .env.example .env
+# Edit .env and add your MAINLAYER_API_KEY and RESOURCE_ID
 pip install -r requirements.txt
+
+# Development (with auto-reload)
 uvicorn app:app --reload
 # API available at http://localhost:8000
 ```
 
-**TypeScript**
+**Local development without billing:**
+
+```bash
+# Skip payment verification for testing
+MAINLAYER_ENABLED=false uvicorn app:app --reload
+```
+
+### TypeScript (Express)
 
 ```bash
 cd typescript
-cp .env.example .env   # fill in your values
+cp .env.example .env
+# Edit .env and add your MAINLAYER_API_KEY and RESOURCE_ID
 npm install
+
+# Development
 npm run dev
 # API available at http://localhost:3000
+
+# Documentation
+open http://localhost:3000/docs
 ```
 
-**Docker**
+**Local development without billing:**
+
+```bash
+MAINLAYER_ENABLED=false npm run dev
+```
+
+### Docker
 
 ```bash
 # Python version
@@ -193,6 +223,20 @@ docker compose up python
 
 # TypeScript version
 docker compose up typescript
+```
+
+### Running tests
+
+**Python:**
+```bash
+cd python
+pytest tests/ -v
+```
+
+**TypeScript:**
+```bash
+cd typescript
+npm test
 ```
 
 ---
@@ -236,8 +280,113 @@ Set `MAINLAYER_API_KEY` and `RESOURCE_ID` as environment secrets in your hosting
 
 ---
 
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `MAINLAYER_API_KEY` | Yes | — | Your Mainlayer secret key from [app.mainlayer.fr](https://app.mainlayer.fr) |
+| `RESOURCE_ID` | Yes | — | The resource ID created during setup |
+| `MAINLAYER_BASE_URL` | No | `https://api.mainlayer.fr` | Override for custom Mainlayer instance |
+| `MAINLAYER_TIMEOUT_SECONDS` | No | `10` | Timeout for Mainlayer API calls |
+| `MAINLAYER_ENABLED` | No | `true` | Set to `false` for local development (skip payment) |
+| `LOG_LEVEL` (Python) | No | `INFO` | Logging level (DEBUG, INFO, WARNING, ERROR) |
+| `CORS_ORIGINS` (Python) | No | `*` | Comma-separated list of allowed origins |
+
+---
+
+## Integrating with your API
+
+### Example 1: Protect all routes in a router (Express)
+
+```typescript
+import { Router } from 'express'
+import { requirePayment } from './middleware'
+
+const router = Router()
+const premiumMiddleware = requirePayment({ resourceId: process.env.RESOURCE_ID! })
+
+router.get('/predictions', premiumMiddleware, (req, res) => {
+  res.json({ prediction: 'result' })
+})
+
+router.post('/batch-process', premiumMiddleware, (req, res) => {
+  res.json({ status: 'processing' })
+})
+
+export default router
+```
+
+### Example 2: Different pricing tiers (FastAPI)
+
+```python
+# Create a dependency for premium-tier endpoints
+premium = Depends(check_payment)
+
+# Create a dependency for standard-tier endpoints
+standard = Depends(check_payment)
+
+@app.post("/api/standard", dependencies=[standard])
+async def standard_tier():
+    return {"tier": "standard", "data": ...}
+
+@app.post("/api/premium", dependencies=[premium])
+async def premium_tier():
+    return {"tier": "premium", "data": ...}
+```
+
+---
+
+## Testing your integration
+
+### Using cURL (without real payment)
+
+```bash
+# Set local development mode
+export MAINLAYER_ENABLED=false
+
+# Start your server
+npm run dev  # or: uvicorn app:app --reload
+
+# Call a protected endpoint
+curl http://localhost:3000/api/data \
+  -H "X-Payment-Token: test_token"
+# Returns: { "data": "your valuable data here" }
+```
+
+### Using Python
+
+```python
+import httpx
+
+# Start your server in local development mode
+# MAINLAYER_ENABLED=false npm run dev
+
+resp = httpx.get(
+    "http://localhost:3000/api/data",
+    headers={"X-Payment-Token": "test_token"}
+)
+print(resp.json())
+# Output: { "data": "your valuable data here" }
+```
+
+---
+
+## Pricing models
+
+Configure pricing when creating your Mainlayer resource via the `/setup` endpoint:
+
+| Model | Price | Use case | Example |
+|-------|-------|----------|---------|
+| **Per-call** | $0.001 – $1.00 | Charge per API request | Embeddings, predictions |
+| **Per-unit** | $0.0001 – $0.10 | Charge per output unit | Characters (translation), images, pages (OCR) |
+| **Credits** | $5.00, $10.00, etc. | Pre-purchase credit packs | Flexible consumption |
+| **Subscription** | $9.99/mo, $99/mo, etc. | Monthly access | Unlimited calls up to quota |
+
+---
+
 ## Support
 
 - Docs: [docs.mainlayer.fr](https://docs.mainlayer.fr)
 - Issues: open a GitHub issue on this repository
 - Community: [mainlayer.fr/discord](https://mainlayer.fr/discord)
+- Status: [status.mainlayer.fr](https://status.mainlayer.fr)
