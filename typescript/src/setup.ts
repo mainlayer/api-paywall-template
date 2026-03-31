@@ -6,7 +6,7 @@
  */
 import 'dotenv/config'
 
-const MAINLAYER_BASE_URL = 'https://api.mainlayer.xyz'
+const MAINLAYER_BASE_URL = 'https://api.mainlayer.fr'
 
 interface ResourceConfig {
   name: string
@@ -20,7 +20,7 @@ async function setup(): Promise<void> {
 
   if (!apiKey) {
     console.error('[Mainlayer] MAINLAYER_API_KEY is not set in your .env file.')
-    console.error('  Get your key at https://app.mainlayer.xyz')
+    console.error('  Get your key at https://app.mainlayer.fr')
     process.exit(1)
   }
 

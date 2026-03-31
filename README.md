@@ -1,6 +1,6 @@
 # api-paywall-template
 
-Add a paywall to any API in 5 minutes — powered by [Mainlayer](https://mainlayer.xyz).
+Add a paywall to any API in 5 minutes — powered by [Mainlayer](https://mainlayer.fr).
 
 Mainlayer is the simplest way to monetize any API endpoint. Add one middleware function and your API starts collecting payments automatically. Supports per-call pricing, subscriptions, and credit packs.
 
@@ -10,7 +10,7 @@ Mainlayer is the simplest way to monetize any API endpoint. Add one middleware f
 
 ### Step 1 — Get your Mainlayer API key
 
-Sign up at [app.mainlayer.xyz](https://app.mainlayer.xyz) and copy your API key.
+Sign up at [app.mainlayer.fr](https://app.mainlayer.fr) and copy your API key.
 
 ### Step 2 — Run the interactive setup
 
@@ -72,7 +72,7 @@ Client                         Your API                    Mainlayer
   │◄── 200 { data: ... } ─────────│                            │
 ```
 
-1. The client calls `POST https://api.mainlayer.xyz/pay` with your `resource_id` to get a payment token.
+1. The client calls `POST https://api.mainlayer.fr/pay` with your `resource_id` to get a payment token.
 2. The client includes the token in the `X-Payment-Token` header on every API call.
 3. Your middleware verifies the token with Mainlayer before serving the response.
 4. Invalid or missing tokens get a `402 Payment Required` response automatically.
@@ -90,7 +90,7 @@ async def check_payment(x_payment_token: Optional[str] = Header(None)):
 
 | Header | Required | Description |
 |--------|----------|-------------|
-| `X-Payment-Token` | Yes | Token obtained from `POST https://api.mainlayer.xyz/pay` |
+| `X-Payment-Token` | Yes | Token obtained from `POST https://api.mainlayer.fr/pay` |
 
 **Environment variables**
 
@@ -130,7 +130,7 @@ app.get(
   '/api/premium',
   requirePayment({
     resourceId: process.env.RESOURCE_ID!,
-    unpaidMessage: 'This endpoint requires a paid plan. Visit mainlayer.xyz to get started.',
+    unpaidMessage: 'This endpoint requires a paid plan. Visit mainlayer.fr to get started.',
   }),
   handler,
 )
@@ -238,6 +238,6 @@ Set `MAINLAYER_API_KEY` and `RESOURCE_ID` as environment secrets in your hosting
 
 ## Support
 
-- Docs: [docs.mainlayer.xyz](https://docs.mainlayer.xyz)
+- Docs: [docs.mainlayer.fr](https://docs.mainlayer.fr)
 - Issues: open a GitHub issue on this repository
-- Community: [mainlayer.xyz/discord](https://mainlayer.xyz/discord)
+- Community: [mainlayer.fr/discord](https://mainlayer.fr/discord)

@@ -7,7 +7,7 @@ app.use(express.json())
 
 const PORT = Number(process.env.PORT ?? 3000)
 const RESOURCE_ID = process.env.RESOURCE_ID!
-const MAINLAYER_BASE_URL = 'https://api.mainlayer.xyz'
+const MAINLAYER_BASE_URL = 'https://api.mainlayer.fr'
 
 if (!RESOURCE_ID) {
   console.error('[Mainlayer] RESOURCE_ID is not set. Run `npm run setup` first.')

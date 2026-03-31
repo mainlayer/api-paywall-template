@@ -12,7 +12,7 @@ app = FastAPI(
 )
 
 MAINLAYER_API_KEY = os.environ["MAINLAYER_API_KEY"]
-MAINLAYER_BASE_URL = "https://api.mainlayer.xyz"
+MAINLAYER_BASE_URL = "https://api.mainlayer.fr"
 RESOURCE_ID = os.environ["RESOURCE_ID"]  # Your Mainlayer resource ID
 
 
@@ -38,7 +38,7 @@ async def check_payment(x_payment_token: Optional[str] = Header(None)):
                 "message": "Include your Mainlayer payment token in the X-Payment-Token header.",
                 "resource_id": RESOURCE_ID,
                 "pay_endpoint": f"{MAINLAYER_BASE_URL}/pay",
-                "docs": "https://docs.mainlayer.xyz/quickstart",
+                "docs": "https://docs.mainlayer.fr/quickstart",
             },
         )
 

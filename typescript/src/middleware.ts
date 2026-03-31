@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 
-const MAINLAYER_BASE_URL = 'https://api.mainlayer.xyz'
+const MAINLAYER_BASE_URL = 'https://api.mainlayer.fr'
 
 export interface PaywallOptions {
   /** Mainlayer resource ID for this endpoint or group of endpoints. */
@@ -30,7 +30,7 @@ export interface EntitlementPayload {
  *   app.get('/api/data', requirePayment({ resourceId: process.env.RESOURCE_ID! }), handler)
  *
  * The client must pass its Mainlayer payment token in the X-Payment-Token header.
- * Obtain a token by calling POST https://api.mainlayer.xyz/pay with the resource_id.
+ * Obtain a token by calling POST https://api.mainlayer.fr/pay with the resource_id.
  */
 export function requirePayment(options: PaywallOptions): RequestHandler {
   const { resourceId, unpaidMessage } = options
@@ -54,7 +54,7 @@ export function requirePayment(options: PaywallOptions): RequestHandler {
           'Include your Mainlayer payment token in the X-Payment-Token header.',
         resource_id: resourceId,
         pay_endpoint: `${MAINLAYER_BASE_URL}/pay`,
-        docs: 'https://docs.mainlayer.xyz/quickstart',
+        docs: 'https://docs.mainlayer.fr/quickstart',
       })
       return
     }
