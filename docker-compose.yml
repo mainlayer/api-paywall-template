@@ -1,0 +1,44 @@
+version: "3.9"
+
+# Run the Python (FastAPI) version:
+#   docker compose up python
+#
+# Run the TypeScript (Express) version:
+#   docker compose up typescript
+
+services:
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MAINLAYER_API_KEY=${MAINLAYER_API_KEY}
+      - RESOURCE_ID=${RESOURCE_ID}
+    env_file:
+      - ./python/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  typescript:
+    build:
+      context: ./typescript
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - MAINLAYER_API_KEY=${MAINLAYER_API_KEY}
+      - RESOURCE_ID=${RESOURCE_ID}
+    env_file:
+      - ./typescript/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

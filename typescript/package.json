@@ -1,0 +1,27 @@
+{
+  "name": "api-paywall-template-ts",
+  "version": "1.0.0",
+  "description": "Add a Mainlayer paywall to any Express API in 5 minutes",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "setup": "ts-node src/setup.ts",
+    "lint": "eslint 'src/**/*.ts'",
+    "test": "jest"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # --------------------------------------------------------------------------
+  # Python — lint + type check
+  # --------------------------------------------------------------------------
+  python:
+    name: Python (FastAPI)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt ruff mypy
+
+      - name: Lint (ruff)
+        run: ruff check app.py
+
+      - name: Type check (mypy)
+        run: mypy app.py --ignore-missing-imports
+
+      - name: Verify app imports cleanly
+        env:
+          MAINLAYER_API_KEY: ml_test_key
+          RESOURCE_ID: res_test_id
+        run: python -c "import app; print('OK')"
+
+  # --------------------------------------------------------------------------
+  # TypeScript — build + lint
+  # --------------------------------------------------------------------------
+  typescript:
+    name: TypeScript (Express)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+  # --------------------------------------------------------------------------
+  # Docker — validate compose syntax
+  # --------------------------------------------------------------------------
+  docker:
+    name: Docker Compose syntax
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: |
+          docker compose config --quiet
+        env:
+          MAINLAYER_API_KEY: ml_test_key
+          RESOURCE_ID: res_test_id
+
+  # --------------------------------------------------------------------------
+  # Shell script — static analysis
+  # --------------------------------------------------------------------------
+  shellcheck:
+    name: Shell scripts (shellcheck)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run shellcheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: scripts
